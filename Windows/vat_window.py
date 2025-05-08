@@ -71,7 +71,7 @@ class Vat(ttk.Toplevel):
         self.quarter_entry.delete(0, "end")
         self.vat_amount_entry.delete(0, "end")
 
-        self.destroy()  # Close the VAT input window
+        self.destroy()  # Close the VAT window
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_total_paid_vat(self):

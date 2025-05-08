@@ -17,7 +17,7 @@ class SocialSecurity(ttk.Toplevel):
 
         # Create table
         self.curr.execute(
-            """CREATE TABLE IF NOT EXISTS social_security (quarter TEXT, amount BLOB)"""
+            """CREATE TABLE IF NOT EXISTS social (quarter TEXT, amount BLOB)"""
         )
         self.conn.commit()
 
@@ -57,20 +57,24 @@ class SocialSecurity(ttk.Toplevel):
             self.quarter_entry.focus()
             return
         self.curr.execute(
-            """INSERT INTO social_security (quarter, amount) VALUES (?, ?)""",
+            """INSERT INTO social (quarter, amount) VALUES (?, ?)""",
             (input[0], input[1]),
         )
         self.conn.commit()
 
         self.update_social_security()  # call the function to update the social security data in the main window
-
-        self.destroy()
+        self.destroy()  # Close the social security window
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_social_security(self):
         """fetch the total social security from the database and update the main window."""
         self.main_window.fetch_total_social_security()
         self.main_window.calc_net_revenue_with_rest_vat()
+
+    def close_connection(self):
+        """Close the database connection."""
+        if self.conn:
+            self.conn.close()
 
 
 if __name__ == "__main__":

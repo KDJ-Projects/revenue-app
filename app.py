@@ -87,6 +87,11 @@ class MainWindow(ttk.Window):
             bootstyle="primary",
             font=("Arial", 12, "bold"),
         )
+        self.seprator = ttk.Separator(
+            master=self.info_frame,
+            orient="horizontal",
+            bootstyle="primary",
+        )
         self.paid_vat_info_lbl = ttk.Label(
             master=self.info_frame,
             text="",
@@ -99,7 +104,6 @@ class MainWindow(ttk.Window):
             bootstyle="primary",
             font=("Arial", 12, "bold"),
         )
-
         self.social_security_lbl = ttk.Label(
             master=self.info_frame,
             text="",
@@ -111,9 +115,10 @@ class MainWindow(ttk.Window):
         self.gross_revenue_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="E")
         self.revenue_info_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="E")
         self.vat_info_lbl.grid(row=2, column=0, padx=5, pady=5, sticky="E")
-        self.paid_vat_info_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="E")
-        self.diff_vat_info_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="E")
-        self.social_security_lbl.grid(row=5, column=0, padx=5, pady=5, sticky="E")
+        self.seprator.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky="EW")
+        self.paid_vat_info_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="E")
+        self.diff_vat_info_lbl.grid(row=5, column=0, padx=5, pady=5, sticky="E")
+        self.social_security_lbl.grid(row=6, column=0, padx=5, pady=5, sticky="E")
 
         # Fetch and calculate initial values
         self.fetch_total_revenue()
@@ -191,7 +196,7 @@ class MainWindow(ttk.Window):
 
     def fetch_total_social_security(self):
         """function to fetch the total social security from the database."""
-        self.curr.execute("SELECT SUM(amount) FROM social_security")
+        self.curr.execute("SELECT SUM(amount) FROM social")
         self.total_social_security = self.curr.fetchone()[0]  # Fetch the first value
 
         if self.total_social_security is None:
@@ -217,14 +222,14 @@ class MainWindow(ttk.Window):
     def calc_diff_vat_amount_vat_paid(self):
         """function to fetch the difference between VAT income and quarter VAT."""
         self.total_vat = self.fetch_total_vat_revenue()
-        self.total_quarter_vat = self.fetch_total_paid_vat()
+        self.total_paid_vat = self.fetch_total_paid_vat()
 
         if self.total_vat is None:
             self.total_vat = 0.0
-        if self.total_quarter_vat is None:
-            self.total_quarter_vat = 0.0
+        if self.total_paid_vat is None:
+            self.total_paid_vat = 0.0
 
-        self.diff_vat = self.total_vat - self.total_quarter_vat
+        self.diff_vat = self.total_vat - self.total_paid_vat
 
         self.diff_vat_info_lbl.config(
             text=f"{'Verschil Btw:':<14} {self.diff_vat:>20,.2f}€"

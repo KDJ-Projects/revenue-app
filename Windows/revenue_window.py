@@ -128,8 +128,10 @@ class Revenue(ttk.Toplevel):
                 ]
             )
             messagebox.showinfo("Resultaat", result_str)
+
         self.month_entry.delete(0, ttk.END)
         self.month_entry.focus()
+        self.destroy()  # Close the revenue window
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_total_revenue_amount(self):
