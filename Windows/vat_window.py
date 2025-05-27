@@ -1,6 +1,7 @@
 import sqlite3 as sq
-import ttkbootstrap as ttk
 from tkinter import messagebox
+
+import ttkbootstrap as ttk
 
 
 class Vat(ttk.Toplevel):
@@ -11,6 +12,14 @@ class Vat(ttk.Toplevel):
         """function to initialize the VAT input window."""
         self.title("Ingave Btw")
         self.main_window = main_window  # Store the MainWindow instance
+
+        # Center the window on the screen
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2) - (height // 2)
+        self.geometry(f"+{x}+{y}")
 
         self.conn = sq.connect("project.db")  # Database name
         self.curr = self.conn.cursor()  # Create a cursor
@@ -71,7 +80,7 @@ class Vat(ttk.Toplevel):
         self.quarter_entry.delete(0, "end")
         self.vat_amount_entry.delete(0, "end")
 
-        self.destroy()  # Close the VAT window
+        # self.destroy()  # Close the VAT window
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_total_paid_vat(self):
@@ -86,12 +95,15 @@ class Vat(ttk.Toplevel):
         )
 
     def update_total_difference_vat_amount(self):
-        """fetches the difference between the VAT income and quarter VAT from the MainWindow."""
+        """
+        fetches the difference between the VAT income
+        and quarter VAT from the MainWindow.
+        """
         self.main_window.calc_diff_vat_amount_vat_paid()
 
     def update_total_net_revenue_with_rest_vat(self):
         """fetches the net revenue with the remaining VAT from the MainWindow."""
-        self.main_window.calc_net_revenue_with_rest_vat()  # Fetch the social security data from the database
+        self.main_window.calc_net_revenue_with_rest_vat()
 
     def close_connection(self):
         """function to close the database connection."""

@@ -1,6 +1,7 @@
 import sqlite3 as sq
-import ttkbootstrap as ttk
 from tkinter import messagebox
+
+import ttkbootstrap as ttk
 
 
 class SocialSecurity(ttk.Toplevel):
@@ -11,6 +12,14 @@ class SocialSecurity(ttk.Toplevel):
         """function to initialize the social security input window."""
         self.title("Ingave Sociale Zekerheid")
         self.main_window = main_window  # Store the MainWindow instance
+
+        # Center the window on the screen
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2) - (height // 2)
+        self.geometry(f"+{x}+{y}")
 
         self.conn = sq.connect("project.db")  # Database name
         self.curr = self.conn.cursor()  # Create a cursor
@@ -62,12 +71,13 @@ class SocialSecurity(ttk.Toplevel):
         )
         self.conn.commit()
 
-        self.update_social_security()  # call the function to update the social security data in the main window
+        self.update_social_security()  # call function to update the in the main window
         self.destroy()  # Close the social security window
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_social_security(self):
-        """fetch the total social security from the database and update the main window."""
+        """fetch the total social security from the
+        database and update the main window."""
         self.main_window.fetch_total_social_security()
         self.main_window.calc_net_revenue_with_rest_vat()
 

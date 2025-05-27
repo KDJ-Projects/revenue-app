@@ -1,6 +1,7 @@
 import sqlite3 as sq
-import ttkbootstrap as ttk
 from tkinter import messagebox
+
+import ttkbootstrap as ttk
 
 
 class Revenue(ttk.Toplevel):
@@ -12,12 +13,23 @@ class Revenue(ttk.Toplevel):
         self.title("Ingave inkomsten")
         self.main_window = main_window  # Store the MainWindow instance
 
+        # Center the window on the screen
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2) - (width // 10)
+        y = (self.winfo_screenheight() // 2) - (height // 2) - height
+        self.geometry(f"+{x}+{y}")
+
         self.conn = sq.connect("project.db")  # Database name
         self.curr = self.conn.cursor()  # Create a cursor
 
         # Create table
         self.curr.execute(
-            """CREATE TABLE IF NOT EXISTS revenue (month TEXT, company TEXT, amount BLOB, tax BLOB)"""
+            """CREATE TABLE
+            IF NOT EXISTS revenue (
+            month TEXT, company TEXT, amount BLOB, tax BLOB)
+            """
         )
         self.conn.commit()
 
@@ -131,7 +143,7 @@ class Revenue(ttk.Toplevel):
 
         self.month_entry.delete(0, ttk.END)
         self.month_entry.focus()
-        self.destroy()  # Close the revenue window
+        # self.destroy()  # Close the revenue window
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_total_revenue_amount(self):
