@@ -135,7 +135,12 @@ class Revenue(ttk.Toplevel):
         else:
             result_str = "\n".join(
                 [
-                    f"Maand: {row[0]}\n Bedrijf: {row[1]}\n Bedrag: {row[2]}€\n Btw: {row[3]}€"
+                    (
+                        f"Maand: {row[0]}\n"
+                        f"Bedrijf: {row[1]}\n"
+                        f"Bedrag: {row[2]}€\n"
+                        f"Btw: {row[3]}€"
+                    )
                     for row in result
                 ]
             )
@@ -165,7 +170,8 @@ class Revenue(ttk.Toplevel):
         self.main_window.calc_gross_revenue()
 
     def update_total_difference_vat_amount(self):
-        """fetches the difference between income VAT and quarter VAT from the MainWindow."""
+        """fetches the difference between income VAT
+        and quarter VAT from the MainWindow."""
         self.main_window.calc_diff_vat_amount_vat_paid()
 
     def update_total_nett_revenue_with_rest_vat(self):

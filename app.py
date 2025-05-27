@@ -329,9 +329,8 @@ class MainWindow(ttk.Window):
             )
 
         self.social_security_lbl.config(
-            text=f"{'Sociale Zekerheid:':<10} {self.total_social_security:>20,.2f}".replace(
-                ",", "X"
-            )
+            text=f"{'Sociale Zekerheid:':<10}"
+            "{self.total_social_security:>20,.2f}".replace(",", "X")
             .replace(".", ",")
             .replace("X", ".")
             + " €"
@@ -400,12 +399,14 @@ class MainWindow(ttk.Window):
             )
 
         self.net_revenue_with_rest_vat_lbl.config(
-            text=f"Netto inkomsten: {self.total_net_revenue_with_rest_vat:,.2f}".replace(
-                ",", "X"
+            text=(
+                f"Netto inkomsten: {self.total_net_revenue_with_rest_vat:,.2f}".replace(
+                    ",", "X"
+                )
+                .replace(".", ",")
+                .replace("X", ".")
+                + " €"
             )
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
         )
 
         return self.total_net_revenue_with_rest_vat
