@@ -18,6 +18,7 @@ class MainWindow(ttk.Window):
         super().__init__()
         """function to initialize the main window."""
         self.title("KDJ - Projects")
+
         # Center the window on the screen
         self.update_idletasks()
         width = self.winfo_width()
@@ -260,14 +261,15 @@ class MainWindow(ttk.Window):
             self.total_revenue = 0.0
             return self.total_revenue
 
+        # fmt: off
         self.revenue_info_lbl.config(
-            text=f"{'Netto Inkomsten:':10} {self.total_revenue:>20,.2f}".replace(
-                ",", "X"
-            )
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
+            text=f"{'Netto Inkomsten:':10} {self.total_revenue:>20,.2f}"
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+                + " €"
         )
+        # fmt: on
         return self.total_revenue
 
     def fetch_total_vat_revenue(self):
@@ -278,39 +280,40 @@ class MainWindow(ttk.Window):
         if self.total_vat is None:
             self.total_vat = 0.0
             return self.total_vat
-
+        # fmt: off
         self.vat_info_lbl.config(
-            text=f"{'Btw Inkomsten:':<15} {self.total_vat:>20,.2f}".replace(",", "X")
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
+            text=f"{'Btw Inkomsten:':<15} {self.total_vat:>20,.2f}"
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+                + " €"
         )
+
         return self.total_vat
 
     def fetch_total_paid_vat(self):
         """function to fetch the total quarterly VAT from the database."""
         self.curr.execute("SELECT SUM(vat_amount) FROM vat")
         self.total_quarter_vat = self.curr.fetchone()[0]  # Fetchfirst value
-
+        # fmt: off
         if self.total_quarter_vat is None:
             self.total_quarter_vat = 0.0
             return self.paid_vat_info_lbl.config(
-                text=f"{'Btw betaald:':<16} {self.total_quarter_vat:>20,.2f}".replace(
-                    ",", "X"
-                )
-                .replace(".", ",")
-                .replace("X", ".")
-                + " €"
+                text=f"{'Btw betaald:':<16} {self.total_quarter_vat:>20,.2f}"
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                    + " €"
             )
 
         self.paid_vat_info_lbl.config(
-            text=f"{'Btw betaald:':<16} {self.total_quarter_vat:>20,.2f}".replace(
-                ",", "X"
-            )
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
+            text=f"{'Btw betaald:':<10} {self.total_quarter_vat:>20,.2f}"
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+                + " €"
         )
+        # fmt: on
         return self.total_quarter_vat
 
     def fetch_total_social_security(self):
@@ -318,23 +321,25 @@ class MainWindow(ttk.Window):
         self.curr.execute("SELECT SUM(amount) FROM social")
         self.total_social_security = self.curr.fetchone()[0]
 
+        # fmt: off
         if self.total_social_security is None:
             self.total_social_security = 0.0
             return self.social_security_lbl.config(
-                text=f"{'Sociale Zekerheid:':<10}"
-                "{self.total_social_security:>20,.2f}".replace(",", "X")
-                .replace(".", ",")
-                .replace("X", ".")
-                + " €"
+                text=f"{'Sociale Zekerheid:':<10} {self.total_social_security:>20,.2f}"
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                    + " €"
             )
 
         self.social_security_lbl.config(
-            text=f"{'Sociale Zekerheid:':<10}"
-            "{self.total_social_security:>20,.2f}".replace(",", "X")
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
+            text=f"{'Sociale Zekerheid:':<10} {self.total_social_security:>20,.2f}"
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+                + " €"
         )
+        # fmt: on
         return self.total_social_security
 
     # CALCULATIONS FUNCTIONS
@@ -351,7 +356,7 @@ class MainWindow(ttk.Window):
         )
         return self.gross_revenue
 
-    def calc_diff_vat_amount_vat_paid(self):
+    def calc_diff_vat_amount_vat_paid(self) -> float:
         """function to fetch the difference between VAT income and quarter VAT."""
         self.total_vat = self.fetch_total_vat_revenue()
         self.total_paid_vat = self.fetch_total_paid_vat()
@@ -362,16 +367,18 @@ class MainWindow(ttk.Window):
             self.total_paid_vat = 0.0
 
         self.diff_vat = self.total_vat - self.total_paid_vat
-
+        # fmt: off
         self.diff_vat_info_lbl.config(
-            text=f"{'Verschil Btw:':<14} {self.diff_vat:>20,.2f}".replace(",", "X")
+            text=f"{'Verschil Btw:':<10} {self.diff_vat:>20,.2f}"
+            .replace(",", "X")
             .replace(".", ",")
             .replace("X", ".")
             + " €"
         )
+        # fmt: on
         return self.diff_vat
 
-    def calc_net_revenue_with_rest_vat(self):
+    def calc_net_revenue_with_rest_vat(self) -> float:
         """function to fetch the net revenue with the rest vat."""
         self.total_social_security = self.fetch_total_social_security()
         self.net_revenue = self.fetch_total_revenue()
@@ -397,17 +404,15 @@ class MainWindow(ttk.Window):
             self.total_net_revenue_with_rest_vat = (
                 self.net_revenue - self.total_social_security
             )
-
+        # fmt: off
         self.net_revenue_with_rest_vat_lbl.config(
-            text=(
-                f"Netto inkomsten: {self.total_net_revenue_with_rest_vat:,.2f}".replace(
-                    ",", "X"
-                )
+            text=f"Netto inkomsten: {self.total_net_revenue_with_rest_vat:,.2f}"
+                .replace(",", "X")
                 .replace(".", ",")
                 .replace("X", ".")
                 + " €"
-            )
         )
+        # fmt: on
 
         return self.total_net_revenue_with_rest_vat
 
