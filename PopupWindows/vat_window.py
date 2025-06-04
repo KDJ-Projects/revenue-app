@@ -20,8 +20,9 @@ class Vat(ttk.Toplevel):
         x = (self.winfo_screenwidth() // 2) - (width // 2)
         y = (self.winfo_screenheight() // 2) - (height // 2) - (height // 2)
         self.geometry(f"+{x}+{y}")
+        self.resizable(False, False)  # Disable resizing
 
-        self.conn = sq.connect("project.db")  # Database name
+        self.conn = sq.connect("./Database/project.db")  # Database name
         self.curr = self.conn.cursor()  # Create a cursor
 
         # Create table
@@ -58,25 +59,33 @@ class Vat(ttk.Toplevel):
     # INPUT FUNCTIONS
     def input_vat(self):
         """function to input the VAT data into the database."""
-        input = (self.quarter_entry.get(), self.vat_amount_entry.get())
+        input_vat = (self.quarter_entry.get(), self.vat_amount_entry.get())
 
-        if not input[0] or not input[1]:
+        if not all(input_vat):
             messagebox.showerror("Opgelet", "Vul alstublieft alle velden in.")
             self.quarter_entry.focus()  # Set focus back to the quarter entry field
             return
+        try:
+            self.curr.execute(
+                """INSERT INTO vat (vat_quarter, vat_amount) VALUES (?, ?)""",
+                input_vat,
+            )
+            self.conn.commit()
 
-        self.curr.execute(
-            """INSERT INTO vat (vat_quarter, vat_amount) VALUES (?, ?)""",
-            (input[0], input[1]),
-        )
-        self.conn.commit()
+            # Calling the functons to get the data from MainWindow
+            self.update_total_paid_vat()
+            self.update_total_difference_vat_amount()
+            self.update_total_net_revenue_with_rest_vat()
+            messagebox.showinfo("Succes", "Btw is succesvol ingevoerd.")
+        except sq.Error as e:
+            messagebox.showerror("Database Error", f"Er is een fout opgetreden: {e}")
+            return
+        finally:
+            self.clear_entries()
+            self.quarter_entry.focus()
 
-        # Calling the functons to get the data from MainWindow
-        self.update_total_paid_vat()
-        self.update_total_difference_vat_amount()
-        self.update_total_net_revenue_with_rest_vat()
-
-        # Clearing the input fields
+    def clear_entries(self):
+        """function to clear the input fields."""
         self.quarter_entry.delete(0, "end")
         self.vat_amount_entry.delete(0, "end")
 

@@ -10,8 +10,10 @@ import sqlite3 as sq
 
 import ttkbootstrap as ttk
 
+from Database.revenue_calculations import Calculations
 
-class MainWindow(ttk.Window):
+
+class MainWindow(ttk.Window, Calculations):
     """Main window class for KDJ-Projects."""
 
     def __init__(self):
@@ -26,21 +28,29 @@ class MainWindow(ttk.Window):
         x = (self.winfo_screenwidth() // 2) - (width // 2) - width
         y = (self.winfo_screenheight() // 2) - (height // 2) - height
         self.geometry(f"+{x}+{y}")
+        self.resizable(False, False)  # Disable resizing
+
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
         # DATABASE
-        self.conn = sq.connect("project.db")
+        self.conn = sq.connect("./Database/project.db")
         self.curr = self.conn.cursor()
 
         # MAIN WINDOW
         # Creating frames
         self.total_frame = ttk.Frame(self)
-        self.button_frame = ttk.Frame(self)
         self.info_frame = ttk.Frame(self)
+
+        # Creating panels
+        self.button_panel = ttk.Frame(self)
 
         # Layout frames
         self.total_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-        self.button_frame.grid(row=1, column=0, padx=10, pady=10)
         self.info_frame.grid(row=1, column=1, padx=5, pady=10)
+
+        # Layout panels
+        self.button_panel.grid(row=1, column=0, padx=10, pady=10)
 
         # Top total income label
         self.net_revenue_with_rest_vat_lbl = ttk.Label(
@@ -53,9 +63,9 @@ class MainWindow(ttk.Window):
             row=0, column=0, columnspan=3, padx=5, pady=5, sticky="N"
         )
 
-        # Create button frame items
+        # Create button panel items
         self.revenue_btn = ttk.Button(
-            master=self.button_frame,
+            master=self.button_panel,
             text="Inkomsten Ingave",
             width=14,
             bootstyle="success",
@@ -63,7 +73,7 @@ class MainWindow(ttk.Window):
         )
 
         self.vat_btn = ttk.Button(
-            master=self.button_frame,
+            master=self.button_panel,
             text="Btw Ingave",
             width=14,
             bootstyle="success",
@@ -71,7 +81,7 @@ class MainWindow(ttk.Window):
         )
 
         self.social_security_btn = ttk.Button(
-            master=self.button_frame,
+            master=self.button_panel,
             text="RSZ Ingave",
             width=14,
             bootstyle="success",
@@ -79,11 +89,19 @@ class MainWindow(ttk.Window):
         )
 
         self.overview_revenue_btn = ttk.Button(
-            master=self.button_frame,
+            master=self.button_panel,
             text="Overzicht Inkomsten",
             width=14,
             bootstyle="success",
             command=self.show_revenue_overview,
+        )
+
+        self.expense_btn = ttk.Button(
+            master=self.button_panel,
+            text="Uitgaven Ingave",
+            width=14,
+            bootstyle="success",
+            command=self.expense_input,
         )
 
         # Layout for button frame items
@@ -95,6 +113,7 @@ class MainWindow(ttk.Window):
             ipady=10,
             sticky="W",
         )
+
         self.vat_btn.grid(
             row=1,
             column=0,
@@ -103,6 +122,7 @@ class MainWindow(ttk.Window):
             ipady=10,
             sticky="W",
         )
+
         self.social_security_btn.grid(
             row=2,
             column=0,
@@ -111,8 +131,18 @@ class MainWindow(ttk.Window):
             ipady=10,
             sticky="W",
         )
+
         self.overview_revenue_btn.grid(
             row=3,
+            column=0,
+            padx=10,
+            pady=5,
+            ipady=10,
+            sticky="W",
+        )
+
+        self.expense_btn.grid(
+            row=4,
             column=0,
             padx=10,
             pady=5,
@@ -215,39 +245,47 @@ class MainWindow(ttk.Window):
             sticky="E",
         )
 
-        # Fetch and calculate values
+        # Fetch Values
         self.fetch_total_revenue()
         self.fetch_total_vat_revenue()
         self.fetch_total_paid_vat()
         self.fetch_total_social_security()
 
-        self.calc_gross_revenue()
-        self.calc_diff_vat_amount_vat_paid()
-        self.calc_net_revenue_with_rest_vat()
+        # Calculate Values
+        Calculations.calc_gross_revenue(self)
+        Calculations.calc_diff_vat_amount_vat_paid(self)
+        Calculations.calc_net_revenue_with_rest_vat(self)
+        Calculations.calc_diff_vat_amount_vat_paid(self)
 
     # INPUT FUNCTIONS
     def rev_input(self):
         """function to open the revenue input window."""
-        from Windows.revenue_window import Revenue
+        from PopupWindows.revenue_window import Revenue
 
         Revenue(self)
 
     def vat_input(self):
         """function to open the vat input window."""
-        from Windows.vat_window import Vat
+        from PopupWindows.vat_window import Vat
 
         Vat(self)
 
     def social_input(self):
         """function to open the social security input window."""
-        from Windows.social_security_window import SocialSecurity
+        from PopupWindows.social_security_window import SocialSecurity
 
         SocialSecurity(self)
+
+    def expense_input(self):
+        """function to open the expense input window."""
+        from PopupWindows.expenses_window import Expenses
+
+        Expenses(self)
 
     # OVERVIEW FUNCTIONS
     def show_revenue_overview(self):
         """function to show the revenue overview."""
-        from Windows.revenue_overview import RevenueOverview
+        from PopupWindows.revenue_overview_window import RevenueOverview
 
         RevenueOverview(self)
 
@@ -342,83 +380,10 @@ class MainWindow(ttk.Window):
         # fmt: on
         return self.total_social_security
 
-    # CALCULATIONS FUNCTIONS
-    def calc_gross_revenue(self) -> float:
-        """function to fetch the gross revenue from the database."""
-        self.gross_revenue = self.fetch_total_revenue() + self.fetch_total_vat_revenue()
-        self.gross_revenue_lbl.config(
-            text=f"{'Bruto Inkomsten:':<16} {self.gross_revenue:>20,.2f}".replace(
-                ",", "X"
-            )
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
-        )
-        return self.gross_revenue
-
-    def calc_diff_vat_amount_vat_paid(self) -> float:
-        """function to fetch the difference between VAT income and quarter VAT."""
-        self.total_vat = self.fetch_total_vat_revenue()
-        self.total_paid_vat = self.fetch_total_paid_vat()
-
-        if self.total_vat is None:
-            self.total_vat = 0.0
-        if self.total_paid_vat is None:
-            self.total_paid_vat = 0.0
-
-        self.diff_vat = self.total_vat - self.total_paid_vat
-        # fmt: off
-        self.diff_vat_info_lbl.config(
-            text=f"{'Verschil Btw:':<10} {self.diff_vat:>20,.2f}"
-            .replace(",", "X")
-            .replace(".", ",")
-            .replace("X", ".")
-            + " €"
-        )
-        # fmt: on
-        return self.diff_vat
-
-    def calc_net_revenue_with_rest_vat(self) -> float:
-        """function to fetch the net revenue with the rest vat."""
-        self.total_social_security = self.fetch_total_social_security()
-        self.net_revenue = self.fetch_total_revenue()
-        self.diff_vat = self.calc_diff_vat_amount_vat_paid()
-        self.total_vat_revenue = self.fetch_total_vat_revenue()
-
-        self.total_net_revenue_with_rest_vat = self.net_revenue + self.diff_vat
-
-        if self.total_social_security is None:
-            self.total_social_security = 0.0
-        if self.net_revenue is None:
-            self.net_revenue = 0.0
-        if self.diff_vat is None:
-            self.diff_vat = 0.0
-        if self.total_vat_revenue is None:
-            self.total_vat_revenue = 0.0
-
-        if self.diff_vat < self.total_vat_revenue:
-            self.total_net_revenue_with_rest_vat = (
-                self.total_net_revenue_with_rest_vat - self.total_social_security
-            )
-        else:
-            self.total_net_revenue_with_rest_vat = (
-                self.net_revenue - self.total_social_security
-            )
-        # fmt: off
-        self.net_revenue_with_rest_vat_lbl.config(
-            text=f"Netto inkomsten: {self.total_net_revenue_with_rest_vat:,.2f}"
-                .replace(",", "X")
-                .replace(".", ",")
-                .replace("X", ".")
-                + " €"
-        )
-        # fmt: on
-
-        return self.total_net_revenue_with_rest_vat
-
 
 if __name__ == "__main__":
     """Main function to run the application."""
     app = MainWindow()
     style = ttk.Style(theme="superhero")
+    # style = ttk.Style(theme="morph")
     app.mainloop()

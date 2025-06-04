@@ -19,13 +19,19 @@ class RevenueOverview(ttk.Toplevel):
         x = (self.winfo_screenwidth() // 2) - (width // 2) - (width // 10)
         y = (self.winfo_screenheight() // 2) - (height // 2) - (height // 2)
         self.geometry(f"+{x}+{y}")
+        self.resizable(False, False)  # Disable resizing
 
-        self.conn = sq.connect("project.db")
+        self.conn = sq.connect("./Database/project.db")
         self.curr = self.conn.cursor()
 
         # Fetch data first to determine height
         self.rows = self.fetch_revenue_overview()
         self.tree_height = max(5, len(self.rows))  # Minimum 5 rows for aesthetics
+
+        # Create a style for the Treeview
+        style = ttk.Style()
+        style.configure("Treeview", rowheight=30)
+        style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
 
         # Create a Treeview widget
         self.tree = ttk.Treeview(
@@ -45,7 +51,6 @@ class RevenueOverview(ttk.Toplevel):
         self.tree.heading("Bedrijf", text="Bedrijf", anchor="center")
         self.tree.heading("Bedrag", text="Bedrag", anchor="center")
         self.tree.pack(fill=ttk.BOTH, expand=True)
-        # self.tree.pack()
 
         # Populate the list view with data
         self.populate_list_view()

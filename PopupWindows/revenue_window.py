@@ -20,8 +20,9 @@ class Revenue(ttk.Toplevel):
         x = (self.winfo_screenwidth() // 2) - (width // 2) - (width // 10)
         y = (self.winfo_screenheight() // 2) - (height // 2) - height
         self.geometry(f"+{x}+{y}")
+        self.resizable(False, False)  # Disable resizing
 
-        self.conn = sq.connect("project.db")  # Database name
+        self.conn = sq.connect("./Database/project.db")  # Database name
         self.curr = self.conn.cursor()  # Create a cursor
 
         # Create table
@@ -66,7 +67,7 @@ class Revenue(ttk.Toplevel):
         self.enter_revenue_btn = ttk.Button(
             self,
             text="Invoeren",
-            bootstyle="success",
+            bootstyle="primary",
             command=self.input_revenue,
         )
         self.enter_revenue_btn.grid(
@@ -76,7 +77,7 @@ class Revenue(ttk.Toplevel):
         self.find_revenue_btn = ttk.Button(
             self,
             text="Zoek",
-            bootstyle="success",
+            bootstyle="info",
             command=self.find_revenue,
         )
         self.find_revenue_btn.grid(
@@ -86,35 +87,43 @@ class Revenue(ttk.Toplevel):
     # FUNCTIONS
     def input_revenue(self):
         """inserts the input data into the database."""
-        input = (
+        input_revenue = (
             self.month_entry.get(),
             self.company_entry.get(),
             self.amount_entry.get(),
             self.vat_entry.get(),
         )
-        if not input[0] or not input[1] or not input[2] or not input[3]:
+        if not all(input_revenue):
             messagebox.showwarning("Opgelet", "Voer alstublieft alle velden in.")
-            self.month_entry.focus()  # Set focus back to the month entry field
             return
 
-        self.curr.execute(
-            "INSERT INTO revenue (month, company, amount, vat) VALUES (?,?,?,?)",
-            (input[0], input[1], input[2], input[3]),
-        )
-        self.conn.commit()
+        try:
+            self.curr.execute(
+                """INSERT INTO revenue (
+                    month, company, amount, vat) VALUES (?,?,?,?)""",
+                input_revenue,
+            )
+            self.conn.commit()
 
-        # Fetching the data from MainWindow
-        self.update_total_revenue_amount()
-        self.update_total_vat_revenue()
-        self.update_total_gross_revenue()
-        self.update_total_difference_vat_amount()
-        self.update_total_nett_revenue_with_rest_vat()
+            # Fetching the data from MainWindow
+            self.update_total_revenue_amount()
+            self.update_total_vat_revenue()
+            self.update_total_gross_revenue()
+            self.update_total_difference_vat_amount()
+            self.update_total_nett_revenue_with_rest_vat()
+            messagebox.showinfo("Succes", "Inkomsten succesvol ingevoerd.")
+        except sq.Error as e:
+            messagebox.showerror("Fout", f"Er is een fout opgetreden: {e}")
+            return
+        finally:
+            self.clear_entries()
 
-        # clears all input fields
-        self.month_entry.delete(0, ttk.END)
-        self.company_entry.delete(0, ttk.END)
-        self.amount_entry.delete(0, ttk.END)
-        self.vat_entry.delete(0, ttk.END)
+    def clear_entries(self):
+        """function to clear the input fields."""
+        self.month_entry.delete(0, "end")
+        self.company_entry.delete(0, "end")
+        self.amount_entry.delete(0, "end")
+        self.vat_entry.delete(0, "end")
 
         self.destroy()  # Close the revenue window
 

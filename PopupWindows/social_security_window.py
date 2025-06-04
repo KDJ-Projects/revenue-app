@@ -20,8 +20,9 @@ class SocialSecurity(ttk.Toplevel):
         x = (self.winfo_screenwidth() // 2) - (width // 2)
         y = (self.winfo_screenheight() // 2) - (height // 2) - (height // 2)
         self.geometry(f"+{x}+{y}")
+        self.resizable(False, False)  # Disable resizing
 
-        self.conn = sq.connect("project.db")  # Database name
+        self.conn = sq.connect("./Database/project.db")  # Database name
         self.curr = self.conn.cursor()  # Create a cursor
 
         # Create table
@@ -59,20 +60,34 @@ class SocialSecurity(ttk.Toplevel):
     # INPUT FUNCTIONS
     def input_social_security(self):
         """function to input the social security data into the database."""
-        input = (self.quarter_entry.get(), self.amount_entry.get())
+        input_social = (self.quarter_entry.get(), self.amount_entry.get())
 
-        if not input[0] or not input[1]:
+        if not all(input_social):
             messagebox.showerror("Opgelet", "Vul alstublieft alle velden in.")
-            self.quarter_entry.focus()
+            self.quarter_entry.focus()  # Focus on the first empty field
             return
-        self.curr.execute(
-            """INSERT INTO social (quarter, amount) VALUES (?, ?)""",
-            (input[0], input[1]),
-        )
-        self.conn.commit()
+        try:
+            self.curr.execute(
+                """INSERT INTO social (quarter, amount) VALUES (?, ?)""",
+                input_social,
+            )
+            self.conn.commit()
 
-        self.update_social_security()  # call function to update the in the main window
-        self.destroy()  # Close the social security window
+            self.update_social_security()  # Update data in the main window
+            messagebox.showinfo(
+                "Succes", "De sociale zekerheid is succesvol ingevoerd."
+            )
+        except sq.Error as e:
+            messagebox.showerror("Fout", f"Er is een fout opgetreden: {e}")
+        finally:
+            self.clear_entries()  # Clear the input fields after successful entry
+            self.quarter_entry.focus()  # Set focus back to the quarter entry field
+
+    def clear_entries(self):
+        """function to clear the input fields."""
+        self.quarter_entry.delete(0, "end")
+        self.amount_entry.delete(0, "end")
+        self.quarter_entry.focus()
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_social_security(self):
