@@ -81,13 +81,11 @@ class SocialSecurity(ttk.Toplevel):
             messagebox.showinfo(
                 "Succes", "De sociale zekerheid is succesvol ingevoerd."
             )
+            self.destroy()  # Close the popup window after successful entry
         except sq.Error as e:
             messagebox.showerror("Fout", f"Er is een fout opgetreden: {e}")
-        finally:
-            self.clear_entries()  # Clear the input fields after successful entry
-            self.social_entries[
-                "quarter"
-            ].focus()  # Set focus back to the quarter entry field
+            self.clear_entries()
+            self.social_entries["quarter"].focus()  # Focus on the first empty field
 
     def clear_entries(self):
         """function to clear the input fields."""

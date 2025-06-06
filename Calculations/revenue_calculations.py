@@ -24,14 +24,15 @@ class Calculations:
         main_window.gross_revenue = (
             main_window.fetch_total_revenue() + main_window.fetch_total_vat_revenue()
         )
+        # fmt: off
         main_window.info_labels["gross_revenue_info"].config(
-            text=f"{'Bruto Inkomsten:':<16} {main_window.gross_revenue:>20,.2f}".replace(
-                ",", "X"
-            )
+            text=f"{'Bruto Inkomsten:':<16} {main_window.gross_revenue:>20,.2f}"
+            .replace(",", "X")
             .replace(".", ",")
             .replace("X", ".")
             + " €"
         )
+        # fmt: on
         return main_window.gross_revenue
 
     def calc_diff_vat_amount_vat_paid(self) -> float:
