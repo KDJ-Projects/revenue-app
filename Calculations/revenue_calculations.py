@@ -1,81 +1,99 @@
 """Calculations for revenue, VAT, and net revenue with rest VAT."""
 
+from typing import Any, cast
 
+
+# pylint: disable=no-member
+# pylint: disable=too-many-instance-attributes
 class Calculations:
     """Class to perform calculations related to revenue, VAT, and net revenue."""
 
+    def __init__(self):
+        self.gross_revenue = 0.0
+        self.total_vat = 0.0
+        self.total_paid_vat = 0.0
+        self.diff_vat = 0.0
+        self.total_social_security = 0.0
+        self.net_revenue = 0.0
+        self.total_vat_revenue = 0.0
+        self.total_net_revenue_with_rest_vat = 0.0
+
     def calc_gross_revenue(self) -> float:
         """function to fetch the gross revenue from the database."""
-        self.gross_revenue = self.fetch_total_revenue() + self.fetch_total_vat_revenue()
-        self.info_labels["gross_revenue_info"].config(
-            text=f"{'Bruto Inkomsten:':<16} {self.gross_revenue:>20,.2f}".replace(
+        main_window = cast(Any, self)
+        main_window.gross_revenue = (
+            main_window.fetch_total_revenue() + main_window.fetch_total_vat_revenue()
+        )
+        main_window.info_labels["gross_revenue_info"].config(
+            text=f"{'Bruto Inkomsten:':<16} {main_window.gross_revenue:>20,.2f}".replace(
                 ",", "X"
             )
             .replace(".", ",")
             .replace("X", ".")
             + " €"
         )
-        return self.gross_revenue
+        return main_window.gross_revenue
 
     def calc_diff_vat_amount_vat_paid(self) -> float:
         """function to fetch the difference between VAT income and quarter VAT."""
-        self.total_vat = self.fetch_total_vat_revenue()
-        self.total_paid_vat = self.fetch_total_paid_vat()
+        main_window = cast(Any, self)
+        main_window.total_vat = main_window.fetch_total_vat_revenue()
+        main_window.total_paid_vat = main_window.fetch_total_paid_vat()
 
-        if self.total_vat is None:
-            self.total_vat = 0.0
-        if self.total_paid_vat is None:
-            self.total_paid_vat = 0.0
+        if main_window.total_vat is None:
+            main_window.total_vat = 0.0
+        if main_window.total_paid_vat is None:
+            main_window.total_paid_vat = 0.0
 
-        self.diff_vat = self.total_vat - self.total_paid_vat
+        main_window.diff_vat = main_window.total_vat - main_window.total_paid_vat
         # fmt: off
-        self.info_labels["diff_vat_info"].config(
-            text=f"{'Verschil Btw:':<10} {self.diff_vat:>20,.2f}"
+        main_window.info_labels["diff_vat_info"].config(
+            text=f"{'Verschil Btw:':<10} {main_window.diff_vat:>20,.2f}"
             .replace(",", "X")
             .replace(".", ",")
             .replace("X", ".")
             + " €"
         )
         # fmt: on
-        return self.diff_vat
+        return main_window.diff_vat
 
     def calc_net_revenue_with_rest_vat(self) -> float:
         """function to fetch the net revenue with the rest vat."""
-        self.total_social_security = self.fetch_total_social_security()
-        self.net_revenue = self.fetch_total_revenue()
-        self.diff_vat = self.calc_diff_vat_amount_vat_paid()
-        self.total_vat_revenue = self.fetch_total_vat_revenue()
+        main_window = cast(Any, self)
+        main_window.total_social_security = main_window.fetch_total_social_security()
+        main_window.net_revenue = main_window.fetch_total_revenue()
+        main_window.diff_vat = main_window.calc_diff_vat_amount_vat_paid()
+        main_window.total_vat_revenue = main_window.fetch_total_vat_revenue()
 
-        self.total_net_revenue_with_rest_vat = self.net_revenue + self.diff_vat
+        main_window.total_net_revenue_with_rest_vat = (
+            main_window.net_revenue + main_window.diff_vat
+        )
 
-        if self.total_social_security is None:
-            self.total_social_security = 0.0
-        if self.net_revenue is None:
-            self.net_revenue = 0.0
-        if self.diff_vat is None:
-            self.diff_vat = 0.0
-        if self.total_vat_revenue is None:
-            self.total_vat_revenue = 0.0
+        if main_window.total_social_security is None:
+            main_window.total_social_security = 0.0
+        if main_window.net_revenue is None:
+            main_window.net_revenue = 0.0
+        if main_window.diff_vat is None:
+            main_window.diff_vat = 0.0
+        if main_window.total_vat_revenue is None:
+            main_window.total_vat_revenue = 0.0
 
-        if self.diff_vat < self.total_vat_revenue:
-            self.total_net_revenue_with_rest_vat = (
-                self.total_net_revenue_with_rest_vat - self.total_social_security
+        if main_window.diff_vat < main_window.total_vat_revenue:
+            main_window.total_net_revenue_with_rest_vat = (
+                main_window.total_net_revenue_with_rest_vat
+                - main_window.total_social_security
             )
         else:
-            self.total_net_revenue_with_rest_vat = (
-                self.net_revenue - self.total_social_security
+            main_window.total_net_revenue_with_rest_vat = (
+                main_window.net_revenue - main_window.total_social_security
             )
         # fmt: off
-        self.net_revenue_with_rest_vat_lbl.config(
-            text=f"Netto inkomsten: {self.total_net_revenue_with_rest_vat:,.2f}"
+        main_window.net_revenue_with_rest_vat_lbl.config(
+            text=f"Netto inkomsten: {main_window.total_net_revenue_with_rest_vat:,.2f}"
                 .replace(",", "X")
                 .replace(".", ",")
                 .replace("X", ".")
                 + " €"
         )
         # fmt: on
-        return self.total_net_revenue_with_rest_vat
-
-
-if __name__ == "__main__":
-    Calculations()
+        return main_window.total_net_revenue_with_rest_vat

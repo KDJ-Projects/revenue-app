@@ -10,7 +10,6 @@ class Vat(ttk.Toplevel):
     """Class for the VAT input window."""
 
     def __init__(self, main_window):
-        """function to initialize the VAT input window."""
         super().__init__()
         self.title("Ingave Btw")
         self.main_window = main_window  # Store the MainWindow instance
@@ -33,13 +32,13 @@ class Vat(ttk.Toplevel):
         )
         self.conn.commit()
 
-        # Create labels and entries for input fields
+        # Create labels for input fields
         self.vat_labels = {
             "quarter": ttk.Label(self, text="Kwartaal:"),
             "vat": ttk.Label(self, text="Btw:"),
         }
-        self.vat_labels["label"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
-        self.vat_labels["label"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
+        self.vat_labels["quarter"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
+        self.vat_labels["vat"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
 
         # Create input fields
         self.vat_entries = {
@@ -58,7 +57,7 @@ class Vat(ttk.Toplevel):
             row=2, column=0, columnspan=3, padx=15, pady=10, sticky="WE"
         )
 
-    # INPUT FUNCTIONS
+    # FUNCTIONS
     def input_vat(self):
         """function to input the VAT data into the database."""
         input_vat = (
@@ -72,6 +71,7 @@ class Vat(ttk.Toplevel):
                 "quarter"
             ].focus()  # Set focus back to the quarter entry field
             return
+
         try:
             self.curr.execute(
                 """INSERT INTO vat (vat_quarter, vat_amount) VALUES (?, ?)""",
@@ -89,7 +89,6 @@ class Vat(ttk.Toplevel):
             return
         finally:
             self.clear_entries()
-            self.vat_entries["quarter"].focus()
 
     def clear_entries(self):
         """function to clear the input fields."""
@@ -104,7 +103,7 @@ class Vat(ttk.Toplevel):
         if total_quarter_vat is None:
             total_quarter_vat = 0.0
 
-        self.main_window.paid_vat_info_lbl.config(
+        self.main_window.info_labels["paid_vat_info"].config(
             text=f"Btw Kwartaal: {total_quarter_vat:,.2f}€"
         )
 

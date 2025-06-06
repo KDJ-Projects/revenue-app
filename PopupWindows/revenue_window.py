@@ -1,4 +1,5 @@
-"""Revenue input window for entering income data."""
+"""this module contains the Revenue class,
+which allows users to input revenue data into a database."""
 
 import sqlite3 as sq
 from tkinter import messagebox
@@ -7,7 +8,7 @@ import ttkbootstrap as ttk  # type: ignore
 
 
 class Revenue(ttk.Toplevel):
-    """This class allows users to input revenue data into a database."""
+    """Class for the revenue input window."""
 
     def __init__(self, main_window):
         super().__init__()
@@ -28,9 +29,8 @@ class Revenue(ttk.Toplevel):
 
         # Create table
         self.curr.execute(
-            """CREATE TABLE
-            IF NOT EXISTS revenue (
-            month TEXT, company TEXT, amount BLOB, tax BLOB)
+            """CREATE TABLE IF NOT EXISTS revenue
+            (month TEXT, company TEXT, amount BLOB, tax BLOB)
             """
         )
         self.conn.commit()
@@ -55,7 +55,7 @@ class Revenue(ttk.Toplevel):
             "vat": ttk.Entry(self, width=10),
         }
         self.revenue_entries["month"].grid(row=0, column=1, padx=(5, 10), pady=5)
-        self.revenue_entries["month"].focus()
+        self.revenue_entries["month"].focus()  # Set focus to the month entry field
         self.revenue_entries["company"].grid(row=1, column=1, padx=(5, 10), pady=5)
         self.revenue_entries["amount"].grid(row=2, column=1, padx=(5, 10), pady=5)
         self.revenue_entries["vat"].grid(row=3, column=1, padx=(5, 10), pady=5)
@@ -85,6 +85,7 @@ class Revenue(ttk.Toplevel):
             self.revenue_entries["amount"].get(),
             self.revenue_entries["vat"].get(),
         )
+
         if not all(input_revenue):
             messagebox.showwarning("Opgelet", "Voer alstublieft alle velden in.")
             return

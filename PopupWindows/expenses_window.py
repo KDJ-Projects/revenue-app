@@ -43,7 +43,7 @@ class Expenses(ttk.Toplevel):
         self.expense_labels = {
             "month": ttk.Label(self, text="Maand:"),
             "vendor": ttk.Label(self, text="Leverancier:"),
-            "grosst": ttk.Label(self, text="Brutto bedrag:"),
+            "gross": ttk.Label(self, text="Brutto bedrag:"),
             "nett": ttk.Label(self, text="Netto bedrag:"),
             "descr": ttk.Label(self, text="Omschrijving:"),
         }
@@ -61,10 +61,8 @@ class Expenses(ttk.Toplevel):
             "nett": ttk.Entry(self, width=10),
             "descr": ttk.Entry(self, width=10),
         }
-        self.expense_entries["month"].grid(
-            row=0, column=1, padx=(5, 10), pady=5
-        ).focus()
-        # self.month_entry.focus()
+        self.expense_entries["month"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.expense_entries["month"].focus()  # Set focus to the month entry field
         self.expense_entries["vendor"].grid(row=1, column=1, padx=(5, 10), pady=5)
         self.expense_entries["gross"].grid(row=2, column=1, padx=(5, 10), pady=5)
         self.expense_entries["nett"].grid(row=3, column=1, padx=(5, 10), pady=5)
