@@ -1,15 +1,16 @@
+"""Revenue input window for entering income data."""
+
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk
+import ttkbootstrap as ttk  # type: ignore
 
 
 class Revenue(ttk.Toplevel):
-    """Class for the revenue input window."""
+    """This class allows users to input revenue data into a database."""
 
     def __init__(self, main_window):
         super().__init__()
-        """function to initialize the revenue input window."""
         self.title("Ingave inkomsten")
         self.main_window = main_window  # Store the MainWindow instance
 
@@ -34,53 +35,44 @@ class Revenue(ttk.Toplevel):
         )
         self.conn.commit()
 
-        # Input Date
-        self.month_lbl = ttk.Label(self, text="Maand:")
-        self.month_entry = ttk.Entry(self, width=10)
-        self.month_entry.focus()
+        # Create labels for input fields
+        self.revenue_labels = {
+            "month": ttk.Label(self, text="Maand:"),
+            "company": ttk.Label(self, text="Bedrijf:"),
+            "amount": ttk.Label(self, text="Bedrag:"),
+            "vat": ttk.Label(self, text="Btw:"),
+        }
+        self.revenue_labels["month"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
+        self.revenue_labels["company"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
+        self.revenue_labels["amount"].grid(row=2, column=0, padx=5, pady=5, sticky="W")
+        self.revenue_labels["vat"].grid(row=3, column=0, padx=5, pady=5, sticky="W")
 
-        self.month_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="W")
-        self.month_entry.grid(row=0, column=1, padx=(5, 10), pady=5)
+        # Create input fields
+        self.revenue_entries = {
+            "month": ttk.Entry(self, width=10),
+            "company": ttk.Entry(self, width=10),
+            "amount": ttk.Entry(self, width=10),
+            "vat": ttk.Entry(self, width=10),
+        }
+        self.revenue_entries["month"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.revenue_entries["month"].focus()
+        self.revenue_entries["company"].grid(row=1, column=1, padx=(5, 10), pady=5)
+        self.revenue_entries["amount"].grid(row=2, column=1, padx=(5, 10), pady=5)
+        self.revenue_entries["vat"].grid(row=3, column=1, padx=(5, 10), pady=5)
 
-        # Input Company
-        self.company_lbl = ttk.Label(self, text="Bedrijf:")
-        self.company_entry = ttk.Entry(self, width=10)
-
-        self.company_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="W")
-        self.company_entry.grid(row=1, column=1, padx=(5, 10), pady=5)
-
-        # Input Amount
-        self.amount_lbl = ttk.Label(self, text="Bedrag:")
-        self.amount_entry = ttk.Entry(self, width=10)
-
-        self.amount_lbl.grid(row=2, column=0, padx=5, pady=5, sticky="W")
-        self.amount_entry.grid(row=2, column=1, padx=(5, 10), pady=5)
-
-        # Input Vat
-        self.vat_lbl = ttk.Label(self, text="Btw:")
-        self.vat_entry = ttk.Entry(self, width=10)
-
-        self.vat_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="W")
-        self.vat_entry.grid(row=3, column=1, padx=(5, 10), pady=5)
-
-        # BUTTONS
-        self.enter_revenue_btn = ttk.Button(
-            self,
-            text="Invoeren",
-            bootstyle="primary",
-            command=self.input_revenue,
-        )
-        self.enter_revenue_btn.grid(
+        # Create buttons for input and search
+        self.revenue_buttons = {
+            "enter_revenue": ttk.Button(
+                self, text="Invoeren", bootstyle="primary", command=self.input_revenue
+            ),
+            "find_revenue": ttk.Button(
+                self, text="Zoek", bootstyle="info", command=self.find_revenue
+            ),
+        }
+        self.revenue_buttons["enter_revenue"].grid(
             row=4, column=0, columnspan=3, pady=10, padx=15, sticky="WE"
         )
-
-        self.find_revenue_btn = ttk.Button(
-            self,
-            text="Zoek",
-            bootstyle="info",
-            command=self.find_revenue,
-        )
-        self.find_revenue_btn.grid(
+        self.revenue_buttons["find_revenue"].grid(
             row=5, column=0, columnspan=3, pady=10, padx=15, sticky="WE"
         )
 
@@ -88,10 +80,10 @@ class Revenue(ttk.Toplevel):
     def input_revenue(self):
         """inserts the input data into the database."""
         input_revenue = (
-            self.month_entry.get(),
-            self.company_entry.get(),
-            self.amount_entry.get(),
-            self.vat_entry.get(),
+            self.revenue_entries["month"].get(),
+            self.revenue_entries["company"].get(),
+            self.revenue_entries["amount"].get(),
+            self.revenue_entries["vat"].get(),
         )
         if not all(input_revenue):
             messagebox.showwarning("Opgelet", "Voer alstublieft alle velden in.")
@@ -120,21 +112,21 @@ class Revenue(ttk.Toplevel):
 
     def clear_entries(self):
         """function to clear the input fields."""
-        self.month_entry.delete(0, "end")
-        self.company_entry.delete(0, "end")
-        self.amount_entry.delete(0, "end")
-        self.vat_entry.delete(0, "end")
+        self.revenue_entries["month"].delete(0, "end")
+        self.revenue_entries["company"].delete(0, "end")
+        self.revenue_entries["amount"].delete(0, "end")
+        self.revenue_entries["vat"].delete(0, "end")
 
         self.destroy()  # Close the revenue window
 
     # FIND FUNCTIONS
     def find_revenue(self):
         """function to find revenue in the database."""
-        input = self.month_entry.get()
+        rev_input = self.revenue_entries["month"].get()
 
-        if not input:
+        if not rev_input:
             messagebox.showwarning("Opgelet", "Voer alstublieft een maand in.")
-            self.month_entry.focus()
+            self.revenue_entries["month"].focus()
             return
         self.curr.execute("SELECT * FROM revenue WHERE month = ?", (input,))
         result = self.curr.fetchall()
@@ -155,22 +147,21 @@ class Revenue(ttk.Toplevel):
             )
             messagebox.showinfo("Resultaat", result_str)
 
-        self.month_entry.delete(0, ttk.END)
-        self.month_entry.focus()
-        # self.destroy()  # Close the revenue window
+        self.revenue_entries["month"].delete(0, ttk.END)
+        self.revenue_entries["month"].focus()
 
-    # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
+    # UPDATE FUNCTIONS TO UPDATE THE MAIN WINDOW
     def update_total_revenue_amount(self):
         """fetches the total revenue from the MainWindow."""
         total_revenue_amount = self.main_window.fetch_total_revenue()
-        self.main_window.revenue_info_lbl.config(
+        self.main_window.info_labels["revenue_info"].config(
             text=f"Netto Inkomsten: {total_revenue_amount:,.2f}€"
         )
 
     def update_total_vat_revenue(self):
         """fetches the total VAT from the MainWindow."""
         total_vat_amount = self.main_window.fetch_total_vat_revenue()
-        self.main_window.vat_info_lbl.config(
+        self.main_window.info_labels["vat_info"].config(
             text=f"Btw Inkomsten: {total_vat_amount:,.2f}€"
         )
 
@@ -194,9 +185,8 @@ class Revenue(ttk.Toplevel):
 
 
 if __name__ == "__main__":
-    """Main function to run the Revenue class."""
-    revenue = Revenue()
+    revenue = Revenue(main_window=None)
     revenue.protocol(
         "WM_DELETE_WINDOW", lambda: (revenue.close_connection(), revenue.destroy())
-    )  # Close the database connection when the window is closed
+    )  # Handle closing window and connection
     revenue.mainloop()

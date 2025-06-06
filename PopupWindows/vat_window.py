@@ -1,15 +1,17 @@
+"""This module contains the Vat class, which is a Tkinter Toplevel window"""
+
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk
+import ttkbootstrap as ttk  # type: ignore
 
 
 class Vat(ttk.Toplevel):
     """Class for the VAT input window."""
 
     def __init__(self, main_window):
-        super().__init__()
         """function to initialize the VAT input window."""
+        super().__init__()
         self.title("Ingave Btw")
         self.main_window = main_window  # Store the MainWindow instance
 
@@ -31,26 +33,26 @@ class Vat(ttk.Toplevel):
         )
         self.conn.commit()
 
-        # Input Quarter
-        self.quarter_lbl = ttk.Label(self, text="Kwartaal:")
-        self.quarter_entry = ttk.Entry(self, width=10)
-        self.quarter_entry.focus()
+        # Create labels and entries for input fields
+        self.vat_labels = {
+            "quarter": ttk.Label(self, text="Kwartaal:"),
+            "vat": ttk.Label(self, text="Btw:"),
+        }
+        self.vat_labels["label"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
+        self.vat_labels["label"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
 
-        self.quarter_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="W")
-        self.quarter_entry.grid(row=0, column=1, padx=(5, 10), pady=5)
-
-        # Input Vat Amount
-        self.vat_amount_lbl = ttk.Label(self, text="Btw:")
-        self.vat_amount_entry = ttk.Entry(self, width=10)
-        self.vat_amount_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="W")
-        self.vat_amount_entry.grid(row=1, column=1, padx=(5, 10), pady=5)
+        # Create input fields
+        self.vat_entries = {
+            "quarter": ttk.Entry(self, width=10),
+            "vat": ttk.Entry(self, width=10),
+        }
+        self.vat_entries["quarter"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.vat_entries["quarter"].focus()  # Set focus to the quarter entry field
+        self.vat_entries["vat"].grid(row=1, column=1, padx=(5, 10), pady=5)
 
         # Buttons
         self.enter_btn = ttk.Button(
-            self,
-            text="Invoeren",
-            bootstyle="success",
-            command=self.input_vat,
+            self, text="Invoeren", bootstyle="success", command=self.input_vat
         )
         self.enter_btn.grid(
             row=2, column=0, columnspan=3, padx=15, pady=10, sticky="WE"
@@ -59,11 +61,16 @@ class Vat(ttk.Toplevel):
     # INPUT FUNCTIONS
     def input_vat(self):
         """function to input the VAT data into the database."""
-        input_vat = (self.quarter_entry.get(), self.vat_amount_entry.get())
+        input_vat = (
+            self.vat_entries["quarter"].get(),
+            self.vat_entries["vat"].get(),
+        )
 
         if not all(input_vat):
             messagebox.showerror("Opgelet", "Vul alstublieft alle velden in.")
-            self.quarter_entry.focus()  # Set focus back to the quarter entry field
+            self.vat_entries[
+                "quarter"
+            ].focus()  # Set focus back to the quarter entry field
             return
         try:
             self.curr.execute(
@@ -72,7 +79,7 @@ class Vat(ttk.Toplevel):
             )
             self.conn.commit()
 
-            # Calling the functons to get the data from MainWindow
+            # Update the MainWindow with the new VAT data
             self.update_total_paid_vat()
             self.update_total_difference_vat_amount()
             self.update_total_net_revenue_with_rest_vat()
@@ -82,14 +89,12 @@ class Vat(ttk.Toplevel):
             return
         finally:
             self.clear_entries()
-            self.quarter_entry.focus()
+            self.vat_entries["quarter"].focus()
 
     def clear_entries(self):
         """function to clear the input fields."""
-        self.quarter_entry.delete(0, "end")
-        self.vat_amount_entry.delete(0, "end")
-
-        # self.destroy()  # Close the VAT window
+        self.vat_entries["quarter"].delete(0, "end")
+        self.vat_entries["vat"].delete(0, "end")
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_total_paid_vat(self):
@@ -121,9 +126,9 @@ class Vat(ttk.Toplevel):
 
 
 if __name__ == "__main__":
-    """Main function to run the VAT input window."""
-    vat = Vat()
+    # For testing purposes, pass None as main_window
+    vat = Vat(main_window=None)
     vat.protocol(
         "WM_DELETE_WINDOW", lambda: (vat.close_connection(), vat.destroy())
-    )  # Close the connection and destroy the window
+    )  # Handle closing window and connection
     vat.mainloop()

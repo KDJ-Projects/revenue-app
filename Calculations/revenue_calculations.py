@@ -1,11 +1,13 @@
+"""Calculations for revenue, VAT, and net revenue with rest VAT."""
+
+
 class Calculations:
-    def __init__(self):
-        super().__init__()
+    """Class to perform calculations related to revenue, VAT, and net revenue."""
 
     def calc_gross_revenue(self) -> float:
         """function to fetch the gross revenue from the database."""
         self.gross_revenue = self.fetch_total_revenue() + self.fetch_total_vat_revenue()
-        self.gross_revenue_lbl.config(
+        self.info_labels["gross_revenue_info"].config(
             text=f"{'Bruto Inkomsten:':<16} {self.gross_revenue:>20,.2f}".replace(
                 ",", "X"
             )
@@ -27,7 +29,7 @@ class Calculations:
 
         self.diff_vat = self.total_vat - self.total_paid_vat
         # fmt: off
-        self.diff_vat_info_lbl.config(
+        self.info_labels["diff_vat_info"].config(
             text=f"{'Verschil Btw:':<10} {self.diff_vat:>20,.2f}"
             .replace(",", "X")
             .replace(".", ",")

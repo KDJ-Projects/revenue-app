@@ -1,7 +1,9 @@
+"""This module contains the SocialSecurity class, which is a popup window"""
+
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk
+import ttkbootstrap as ttk  # type: ignore
 
 
 class SocialSecurity(ttk.Toplevel):
@@ -9,7 +11,6 @@ class SocialSecurity(ttk.Toplevel):
 
     def __init__(self, main_window):
         super().__init__()
-        """function to initialize the social security input window."""
         self.title("Ingave Sociale Zekerheid")
         self.main_window = main_window  # Store the MainWindow instance
 
@@ -31,20 +32,20 @@ class SocialSecurity(ttk.Toplevel):
         )
         self.conn.commit()
 
-        # Input Month
-        self.quarter_lbl = ttk.Label(self, text="Kwartaal:")
-        self.quarter_entry = ttk.Entry(self, width=10)
-        self.quarter_entry.focus()
+        self.social_labels = {
+            "quarter": ttk.Label(self, text="Kwartaal:"),
+            "amount": ttk.Label(self, text="Bedrag:"),
+        }
+        self.social_labels["quarter"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
+        self.social_labels["amount"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
 
-        self.quarter_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="W")
-        self.quarter_entry.grid(row=0, column=1, padx=(5, 10), pady=5)
-
-        # Input Amount
-        self.amount_lbl = ttk.Label(self, text="Bedrag:")
-        self.amount_entry = ttk.Entry(self, width=10)
-
-        self.amount_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="W")
-        self.amount_entry.grid(row=1, column=1, padx=(5, 10), pady=5)
+        self.social_entries = {
+            "quarter": ttk.Entry(self, width=10),
+            "amount": ttk.Entry(self, width=10),
+        }
+        self.social_entries["quarter"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.social_entries["quarter"].focus()
+        self.social_entries["amount"].grid(row=1, column=1, padx=(5, 10), pady=5)
 
         # BUTTONS
         self.enter_social_security_btn = ttk.Button(
@@ -60,11 +61,14 @@ class SocialSecurity(ttk.Toplevel):
     # INPUT FUNCTIONS
     def input_social_security(self):
         """function to input the social security data into the database."""
-        input_social = (self.quarter_entry.get(), self.amount_entry.get())
+        input_social = (
+            self.social_entries["quarter"].get(),
+            self.social_entries["amount"].get(),
+        )
 
         if not all(input_social):
             messagebox.showerror("Opgelet", "Vul alstublieft alle velden in.")
-            self.quarter_entry.focus()  # Focus on the first empty field
+            self.social_entries["quarter"].focus()  # Focus on the first empty field
             return
         try:
             self.curr.execute(
@@ -81,13 +85,15 @@ class SocialSecurity(ttk.Toplevel):
             messagebox.showerror("Fout", f"Er is een fout opgetreden: {e}")
         finally:
             self.clear_entries()  # Clear the input fields after successful entry
-            self.quarter_entry.focus()  # Set focus back to the quarter entry field
+            self.social_entries[
+                "quarter"
+            ].focus()  # Set focus back to the quarter entry field
 
     def clear_entries(self):
         """function to clear the input fields."""
-        self.quarter_entry.delete(0, "end")
-        self.amount_entry.delete(0, "end")
-        self.quarter_entry.focus()
+        self.social_entries["quarter"].delete(0, "end")
+        self.social_entries["amount"].delete(0, "end")
+        self.social_entries["quarter"].focus()
 
     # UPDATE FUNCTIONS FOR UPDATING MAIN WINDOW
     def update_social_security(self):
@@ -103,11 +109,8 @@ class SocialSecurity(ttk.Toplevel):
 
 
 if __name__ == "__main__":
-    """Main function to test the SocialSecurity class."""
-    SocialSecurity = SocialSecurity()
-    SocialSecurity.protocol(
-        "WM_DELETE_WINDOW",
-        lambda: SocialSecurity.close_connection(),
-        SocialSecurity.destroy(),
-    )  # Close the database connection when the window is closed
-    SocialSecurity.mainloop()
+    social = SocialSecurity(main_window=None)
+    social.protocol(
+        "WM_DELETE_WINDOW", lambda: (social.close_connection(), social.destroy())
+    )  # Handle closing window and connection
+    social.mainloop()

@@ -1,14 +1,15 @@
+"""Revenue Overview Window for displaying revenue data in a Treeview."""
+
 import sqlite3 as sq
 
-import ttkbootstrap as ttk
+import ttkbootstrap as ttk  # type: ignore
 
 
 class RevenueOverview(ttk.Toplevel):
-    """Frame for displaying revenue overview."""
+    """Class for the Revenue Overview window, displaying revenue data in a Treeview."""
 
     def __init__(self, main_window=None):
         super().__init__()
-        """function to open revenue overview window"""
         self.title("Overzicht Inkomsten")
         self.main_window = main_window  # Store the MainWindow instance
 
@@ -56,11 +57,13 @@ class RevenueOverview(ttk.Toplevel):
         self.populate_list_view()
 
     def fetch_revenue_overview(self):
+        """Fetch revenue data from the database."""
         self.curr.execute("SELECT month, company, amount FROM revenue")
         rows = self.curr.fetchall()
         return rows
 
     def populate_list_view(self):
+        """Populate the Treeview with revenue data."""
         for row in self.fetch_revenue_overview():
             maand, bedrijf, bedrag = row
             bedrag = float(bedrag)
@@ -77,7 +80,6 @@ class RevenueOverview(ttk.Toplevel):
 
 
 if __name__ == "__main__":
-    """ Main function to run the Reveneu Overview window"""
     revenue_overview = RevenueOverview()
     revenue_overview.protocol(
         "WM_DELETE_WINDOW",
