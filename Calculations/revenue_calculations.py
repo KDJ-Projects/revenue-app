@@ -25,7 +25,7 @@ class Calculations:
             main_window.fetch_total_revenue() + main_window.fetch_total_vat_revenue()
         )
         # fmt: off
-        main_window.info_labels["gross_revenue_info"].config(
+        main_window.info_labels["gross_revenue_info"].configure(
             text=f"{'Bruto Inkomsten:':<16} {main_window.gross_revenue:>20,.2f}"
             .replace(",", "X")
             .replace(".", ",")
@@ -48,7 +48,7 @@ class Calculations:
 
         main_window.diff_vat = main_window.total_vat - main_window.total_paid_vat
         # fmt: off
-        main_window.info_labels["diff_vat_info"].config(
+        main_window.info_labels["diff_vat_info"].configure(
             text=f"{'Verschil Btw:':<10} {main_window.diff_vat:>20,.2f}"
             .replace(",", "X")
             .replace(".", ",")
@@ -89,7 +89,7 @@ class Calculations:
                 main_window.net_revenue - main_window.total_social_security
             )
         # fmt: off
-        main_window.net_revenue_with_rest_vat_lbl.config(
+        main_window.net_revenue_with_rest_vat_lbl.configure(
             text=f"Netto inkomsten: {main_window.total_net_revenue_with_rest_vat:,.2f}"
                 .replace(",", "X")
                 .replace(".", ",")
