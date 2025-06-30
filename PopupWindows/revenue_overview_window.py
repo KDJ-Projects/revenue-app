@@ -1,16 +1,17 @@
 """Revenue Overview Window for displaying revenue data in a Treeview."""
 
 import sqlite3 as sq
+from tkinter import ttk
 
-import ttkbootstrap as ttk  # type: ignore
+# import ttkbootstrap as ttk  # type: ignore
+import customtkinter as ctk  # type: ignore
 
 
-class RevenueOverview(ttk.Toplevel):
+class RevenueOverview(ctk.CTkToplevel):
     """Class for the Revenue Overview window, displaying revenue data in a Treeview."""
 
     def __init__(self, main_window=None):
         super().__init__()
-        self.title("Overzicht Inkomsten")
         self.main_window = main_window  # Store the MainWindow instance
 
         # Center the window on the screen
@@ -40,7 +41,6 @@ class RevenueOverview(ttk.Toplevel):
             columns=("Maand", "Bedrijf", "Bedrag"),
             show="headings",
             height=self.tree_height,
-            bootstyle="dark",
             selectmode="browse",
             style="Treeview",
         )
@@ -51,7 +51,7 @@ class RevenueOverview(ttk.Toplevel):
         self.tree.heading("Maand", text="Maand", anchor="center")
         self.tree.heading("Bedrijf", text="Bedrijf", anchor="center")
         self.tree.heading("Bedrag", text="Bedrag", anchor="center")
-        self.tree.pack(fill=ttk.BOTH, expand=True)
+        self.tree.pack(fill=ctk.BOTH, expand=True)
 
         # Populate the list view with data
         self.populate_list_view()
@@ -71,7 +71,7 @@ class RevenueOverview(ttk.Toplevel):
                 f"{bedrag:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
                 + " €"
             )
-            self.tree.insert("", ttk.END, values=(maand, bedrijf, bedrag_met_euro))
+            self.tree.insert("", ctk.END, values=(maand, bedrijf, bedrag_met_euro))
 
     def close_connection(self):
         """Close the database connection."""

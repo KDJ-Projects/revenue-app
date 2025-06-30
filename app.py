@@ -1,3 +1,12 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "customtkinter",
+# ]
+# ///
+
+
 """
 Application for managing projects, revenue, expenses, and social security contributions.
 """
@@ -18,7 +27,7 @@ from PopupWindows.vat_window import Vat
 class MainWindow(ctk.CTk, Calculations):
     """Main window class for KDJ-Projects."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """function to initialize the main window."""
         super().__init__()
         self.setup_window()
@@ -37,7 +46,7 @@ class MainWindow(ctk.CTk, Calculations):
         Calculations.calc_net_revenue_with_rest_vat(self)
         Calculations.calc_diff_vat_amount_vat_paid(self)
 
-    def setup_window(self):
+    def setup_window(self) -> None:
         """function to set up the main window."""
         # Center the window on the screen
         self.update_idletasks()
@@ -49,8 +58,10 @@ class MainWindow(ctk.CTk, Calculations):
         self.geometry(f"+{x}+{y}")
         self.resizable(False, False)  # Disable resizing
 
+        self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
     def setup_database(self) -> None:
         """function to set up the database connection."""
@@ -60,141 +71,165 @@ class MainWindow(ctk.CTk, Calculations):
 
     def create_frames(self) -> None:
         """function to create the main window layout."""
-        self.info_frames = {
+        self.main_win_fr = {
             "total": ctk.CTkFrame(self),
             "info": ctk.CTkFrame(self),
             "button": ctk.CTkFrame(self),
         }
-        # Layout frames
-        self.info_frames["total"].grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-        self.info_frames["info"].grid(row=1, column=1, padx=5, pady=10)
-        self.info_frames["button"].grid(row=1, column=0, padx=10, pady=10)
+        # Layout frames in main window
+        self.main_win_fr["total"].grid(
+            row=0, column=0, columnspan=2, padx=10, pady=10, sticky="NSEW"
+        )
+        self.main_win_fr["button"].grid(
+            row=1, column=0, padx=(10, 5), pady=10, sticky="NSEW"
+        )
+        self.main_win_fr["info"].grid(
+            row=1, column=1, padx=(5, 10), pady=10, sticky="NSEW"
+        )
 
-        # configure frames
-        self.info_frames["total"].configure(border_width=2)
+        # configure frames in main window
+        self.main_win_fr["total"].configure(border_width=2)
+        self.main_win_fr["info"].configure(border_width=2)
+        self.main_win_fr["button"].configure(border_width=2)
 
-        # Grid configuration for frames
+        # Grid configuration for frames in main window
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
         # Top total net income label with rest VAT
+        self.main_win_fr["total"].columnconfigure(0, weight=1)
         self.net_revenue_with_rest_vat_lbl = ctk.CTkLabel(
-            master=self.info_frames["total"],
+            master=self.main_win_fr["total"],
             text="",
-            font=("Helvetica", 20, "bold"),
+            font=("Helvetica", 24, "bold"),
+            text_color="#708A58",
         )
         self.net_revenue_with_rest_vat_lbl.grid(
-            row=0, column=0, columnspan=3, padx=5, pady=5, sticky="N"
+            row=0, column=0, columnspan=2, padx=5, pady=5, sticky="WE"
         )
 
         # Create buttons in the info frames
         self.info_buttons = {
             "revenue_btn": ctk.CTkButton(
-                master=self.info_frames["button"],
+                master=self.main_win_fr["button"],
                 text="Inkomsten Ingave",
-                width=14,
                 command=self.rev_input,
             ),
             "vat_btn": ctk.CTkButton(
-                master=self.info_frames["button"],
+                master=self.main_win_fr["button"],
                 text="Btw Ingave",
-                width=14,
                 command=self.vat_input,
             ),
             "social_security_btn": ctk.CTkButton(
-                master=self.info_frames["button"],
+                master=self.main_win_fr["button"],
                 text="RSZ Ingave",
-                width=14,
                 command=self.social_input,
             ),
             "overview_revenue_btn": ctk.CTkButton(
-                master=self.info_frames["button"],
+                master=self.main_win_fr["button"],
                 text="Overzicht Inkomsten",
-                width=14,
                 command=self.show_revenue_overview,
             ),
             "expense_btn": ctk.CTkButton(
-                master=self.info_frames["button"],
+                master=self.main_win_fr["button"],
                 text="Uitgaven Ingave",
-                width=14,
                 command=self.expense_input,
             ),
         }
 
+        self.font_btn = ("Arial", 16, "bold")
+
         # Layout for button frame items
         self.info_buttons["revenue_btn"].grid(
-            row=0, column=0, padx=10, pady=5, ipady=10, sticky="W"
+            row=0, column=0, padx=10, pady=5, ipady=10, sticky="NSEW"
         )
 
         self.info_buttons["vat_btn"].grid(
-            row=1, column=0, padx=10, pady=5, ipady=10, sticky="W"
+            row=1, column=0, padx=10, pady=5, ipady=10, sticky="NSEW"
         )
 
         self.info_buttons["social_security_btn"].grid(
-            row=2, column=0, padx=10, pady=5, ipady=10, sticky="W"
+            row=2, column=0, padx=10, pady=5, ipady=10, sticky="NSEW"
         )
 
         self.info_buttons["overview_revenue_btn"].grid(
-            row=3, column=0, padx=10, pady=5, ipady=10, sticky="W"
+            row=3, column=0, padx=10, pady=5, ipady=10, sticky="NSEW"
         )
 
         self.info_buttons["expense_btn"].grid(
-            row=4, column=0, padx=10, pady=5, ipady=10, sticky="W"
+            row=4, column=0, padx=10, pady=5, ipady=10, sticky="NSEW"
+        )
+
+        # Configure button styles
+        self.info_buttons["revenue_btn"].configure(
+            font=self.font_btn, fg_color="green", hover_color="darkgreen"
+        )
+        self.info_buttons["vat_btn"].configure(
+            font=self.font_btn, fg_color="green", hover_color="darkgreen"
+        )
+        self.info_buttons["social_security_btn"].configure(
+            font=self.font_btn, fg_color="green", hover_color="darkgreen"
+        )
+        self.info_buttons["overview_revenue_btn"].configure(
+            font=self.font_btn, fg_color="green", hover_color="darkgreen"
+        )
+        self.info_buttons["expense_btn"].configure(
+            font=self.font_btn, fg_color="green", hover_color="darkgreen"
         )
 
         # Create info labels in the info frames
         self.info_labels = {
             "gross_revenue_info": ctk.CTkLabel(
-                master=self.info_frames["info"],
+                master=self.main_win_fr["info"],
                 text="Bruto Inkomsten: €",
-                font=("Arial", 12, "bold"),
+                font=("Arial", 14, "bold"),
             ),
             "revenue_info": ctk.CTkLabel(
-                master=self.info_frames["info"],
+                master=self.main_win_fr["info"],
                 text="",
-                font=("Arial", 12, "bold"),
+                font=("Arial", 14, "bold"),
             ),
             "vat_info": ctk.CTkLabel(
-                master=self.info_frames["info"],
+                master=self.main_win_fr["info"],
                 text="",
-                font=("Arial", 12, "bold"),
+                font=("Arial", 14, "bold"),
             ),
             "paid_vat_info": ctk.CTkLabel(
-                master=self.info_frames["info"],
+                master=self.main_win_fr["info"],
                 text="",
-                font=("Arial", 12, "bold"),
+                font=("Arial", 14, "bold"),
             ),
             "diff_vat_info": ctk.CTkLabel(
-                master=self.info_frames["info"],
+                master=self.main_win_fr["info"],
                 text="",
-                font=("Arial", 12, "bold"),
+                font=("Arial", 14, "bold"),
             ),
             "social_security": ctk.CTkLabel(
-                master=self.info_frames["info"],
+                master=self.main_win_fr["info"],
                 text="",
-                font=("Arial", 12, "bold"),
+                font=("Arial", 14, "bold"),
             ),
         }
 
         # Layout info frame items
         self.info_labels["gross_revenue_info"].grid(
-            row=0, column=0, padx=5, pady=5, sticky="E"
+            row=0, column=0, padx=5, pady=10, sticky="W"
         )
         self.info_labels["revenue_info"].grid(
-            row=1, column=0, padx=5, pady=5, sticky="E"
+            row=1, column=0, padx=5, pady=10, sticky="W"
         )
-        self.info_labels["vat_info"].grid(row=2, column=0, padx=5, pady=5, sticky="E")
+        self.info_labels["vat_info"].grid(row=2, column=0, padx=5, pady=10, sticky="W")
 
         self.info_labels["paid_vat_info"].grid(
-            row=4, column=0, padx=5, pady=5, sticky="E"
+            row=4, column=0, padx=5, pady=10, sticky="W"
         )
         self.info_labels["diff_vat_info"].grid(
-            row=5, column=0, padx=5, pady=5, sticky="E"
+            row=5, column=0, padx=5, pady=10, sticky="W"
         )
         self.info_labels["social_security"].grid(
-            row=6, column=0, padx=5, pady=5, sticky="E"
+            row=6, column=0, padx=5, pady=10, sticky="W"
         )
 
     # INPUT FUNCTIONS
@@ -250,7 +285,7 @@ class MainWindow(ctk.CTk, Calculations):
             return self.total_vat
         # fmt: off
         self.info_labels["vat_info"].configure(
-            text=f"{'Btw Inkomsten:':<15} {self.total_vat:>20,.2f}"
+            text=f"{'Btw Inkomsten:':<18} {self.total_vat:>20,.2f}"
                 .replace(",", "X")
                 .replace(".", ",")
                 .replace("X", ".")
@@ -266,8 +301,8 @@ class MainWindow(ctk.CTk, Calculations):
         # fmt: off
         if self.total_quarter_vat is None:
             self.total_quarter_vat = 0.0
-            return self.info_labels["paid_vat_info"].config(
-                text=f"{'Btw betaald:':<16} {self.total_quarter_vat:>20,.2f}"
+            return self.info_labels["paid_vat_info"].configure(
+                text=f"{'Btw betaald:':<21} {self.total_quarter_vat:>20,.2f}"
                 .replace(",", "X")
                 .replace(".", ",")
                 .replace("X", ".")
@@ -275,7 +310,7 @@ class MainWindow(ctk.CTk, Calculations):
             )
 
         self.info_labels["paid_vat_info"].configure(
-            text=f"{'Btw betaald:':<10} {self.total_quarter_vat:>20,.2f}"
+            text=f"{'Btw betaald:':<21} {self.total_quarter_vat:>20,.2f}"
                 .replace(",", "X")
                 .replace(".", ",")
                 .replace("X", ".")
@@ -292,8 +327,8 @@ class MainWindow(ctk.CTk, Calculations):
         # fmt: off
         if self.total_social_security is None:
             self.total_social_security = 0.0
-            return self.info_labels["social_security"].config(
-                text=f"{'Sociale Zekerheid:':<10} {self.total_social_security:>20,.2f}"
+            return self.info_labels["social_security"].configure(
+                text=f"{'Sociale Zekerheid:':<0} {self.total_social_security:>20,.2f}"
                     .replace(",", "X")
                     .replace(".", ",")
                     .replace("X", ".")
@@ -301,7 +336,7 @@ class MainWindow(ctk.CTk, Calculations):
             )
 
         self.info_labels["social_security"].configure(
-            text=f"{'Sociale Zekerheid:':<10} {self.total_social_security:>20,.2f}"
+            text=f"{'Sociale Zekerheid:':<0} {self.total_social_security:>20,.2f}"
                 .replace(",", "X")
                 .replace(".", ",")
                 .replace("X", ".")
@@ -313,5 +348,4 @@ class MainWindow(ctk.CTk, Calculations):
 
 if __name__ == "__main__":
     app = MainWindow()
-    # style = ttk.Style(theme="morph")
     app.mainloop()

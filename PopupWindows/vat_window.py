@@ -3,13 +3,13 @@
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk  # type: ignore
+import customtkinter as ctk  # type: ignore
 
 
-class Vat(ttk.Toplevel):
+class Vat(ctk.CTkToplevel):
     """Class for the VAT input window."""
 
-    def __init__(self, main_window):
+    def __init__(self, main_window) -> None:
         super().__init__()
         self.title("Ingave Btw")
         self.main_window = main_window  # Store the MainWindow instance
@@ -34,27 +34,32 @@ class Vat(ttk.Toplevel):
 
         # Create labels for input fields
         self.vat_labels = {
-            "quarter": ttk.Label(self, text="Kwartaal:"),
-            "vat": ttk.Label(self, text="Btw:"),
+            "quarter": ctk.CTkLabel(self, text="Kwartaal"),
+            "vat": ctk.CTkLabel(self, text="Btw"),
         }
         self.vat_labels["quarter"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
         self.vat_labels["vat"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
 
         # Create input fields
         self.vat_entries = {
-            "quarter": ttk.Entry(self, width=10),
-            "vat": ttk.Entry(self, width=10),
+            "quarter": ctk.CTkEntry(self, width=100),
+            "vat": ctk.CTkEntry(self, width=100),
         }
-        self.vat_entries["quarter"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.vat_entries["quarter"].grid(row=0, column=1, padx=5, pady=5)
         self.vat_entries["quarter"].focus()  # Set focus to the quarter entry field
-        self.vat_entries["vat"].grid(row=1, column=1, padx=(5, 10), pady=5)
+        self.vat_entries["vat"].grid(row=1, column=1, padx=5, pady=5)
 
         # Buttons
-        self.enter_btn = ttk.Button(
-            self, text="Invoeren", bootstyle="success", command=self.input_vat
-        )
+        self.enter_btn = ctk.CTkButton(self, text="Invoeren", command=self.input_vat)
         self.enter_btn.grid(
-            row=2, column=0, columnspan=3, padx=15, pady=10, sticky="WE"
+            row=2, column=0, columnspan=2, padx=5, pady=10, sticky="NSEW"
+        )
+        self.enter_btn.columnconfigure(0, weight=1)
+        self.enter_btn.configure(
+            font=("Arial", 16, "bold"),
+            anchor="center",
+            fg_color="green",
+            hover_color="darkgreen",
         )
 
     # FUNCTIONS

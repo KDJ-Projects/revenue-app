@@ -49,7 +49,7 @@ class Calculations:
         main_window.diff_vat = main_window.total_vat - main_window.total_paid_vat
         # fmt: off
         main_window.info_labels["diff_vat_info"].configure(
-            text=f"{'Verschil Btw:':<10} {main_window.diff_vat:>20,.2f}"
+            text=f"{'Verschil Btw:':<21} {main_window.diff_vat:>20,.2f}"
             .replace(",", "X")
             .replace(".", ",")
             .replace("X", ".")

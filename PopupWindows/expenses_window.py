@@ -6,10 +6,10 @@ for inputting expenses data into a database.
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk  # type: ignore
+import customtkinter as ctk  # type: ignore
 
 
-class Expenses(ttk.Toplevel):
+class Expenses(ctk.CTkToplevel):
     """Class for the expenses input window."""
 
     def __init__(self, main_window):
@@ -41,11 +41,11 @@ class Expenses(ttk.Toplevel):
 
         # Create labels and entries for input fields
         self.expense_labels = {
-            "month": ttk.Label(self, text="Maand:"),
-            "vendor": ttk.Label(self, text="Leverancier:"),
-            "gross": ttk.Label(self, text="Brutto bedrag:"),
-            "nett": ttk.Label(self, text="Netto bedrag:"),
-            "descr": ttk.Label(self, text="Omschrijving:"),
+            "month": ctk.CTkLabel(self, text="Maand"),
+            "vendor": ctk.CTkLabel(self, text="Leverancier"),
+            "gross": ctk.CTkLabel(self, text="Brutto bedrag"),
+            "nett": ctk.CTkLabel(self, text="Netto bedrag"),
+            "descr": ctk.CTkLabel(self, text="Omschrijving"),
         }
         self.expense_labels["month"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
         self.expense_labels["vendor"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
@@ -55,29 +55,36 @@ class Expenses(ttk.Toplevel):
 
         # Create input fields
         self.expense_entries = {
-            "month": ttk.Entry(self, width=10),
-            "vendor": ttk.Entry(self, width=10),
-            "gross": ttk.Entry(self, width=10),
-            "nett": ttk.Entry(self, width=10),
-            "descr": ttk.Entry(self, width=10),
+            "month": ctk.CTkEntry(self, width=100),
+            "vendor": ctk.CTkEntry(self, width=100),
+            "gross": ctk.CTkEntry(self, width=100),
+            "nett": ctk.CTkEntry(self, width=100),
+            "descr": ctk.CTkEntry(self, width=100),
         }
-        self.expense_entries["month"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.expense_entries["month"].grid(row=0, column=1, padx=5, pady=5)
         self.expense_entries["month"].focus()  # Set focus to the month entry field
-        self.expense_entries["vendor"].grid(row=1, column=1, padx=(5, 10), pady=5)
-        self.expense_entries["gross"].grid(row=2, column=1, padx=(5, 10), pady=5)
-        self.expense_entries["nett"].grid(row=3, column=1, padx=(5, 10), pady=5)
-        self.expense_entries["descr"].grid(row=4, column=1, padx=(5, 10), pady=5)
+        self.expense_entries["vendor"].grid(row=1, column=1, padx=5, pady=5)
+        self.expense_entries["gross"].grid(row=2, column=1, padx=5, pady=5)
+        self.expense_entries["nett"].grid(row=3, column=1, padx=5, pady=5)
+        self.expense_entries["descr"].grid(row=4, column=1, padx=5, pady=5)
 
         # Buttons
-        self.enter_btn = ttk.Button(
+        self.enter_btn = ctk.CTkButton(
             self,
             text="Invoeren",
-            bootstyle="success",
             command=self.input_expenses,
         )
         self.enter_btn.grid(
-            row=5, column=0, columnspan=2, padx=15, pady=10, sticky="WE"
+            row=5, column=0, columnspan=2, padx=5, pady=10, sticky="NSEW"
         )
+
+        self.enter_btn.configure(
+            font=("Arial", 14, "bold"),
+            anchor="center",
+            fg_color="green",
+            hover_color="darkgreen",
+            height=35,
+        )  # Set button size
 
     # INPUT FUNCTIONS
     def input_expenses(self):

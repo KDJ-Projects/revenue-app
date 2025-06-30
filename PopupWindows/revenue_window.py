@@ -4,13 +4,13 @@ which allows users to input revenue data into a database."""
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk  # type: ignore
+import customtkinter as ctk  # type: ignore
 
 
-class Revenue(ttk.Toplevel):
+class Revenue(ctk.CTkToplevel):
     """Class for the revenue input window."""
 
-    def __init__(self, main_window):
+    def __init__(self, main_window) -> None:
         super().__init__()
         self.title("Ingave inkomsten")
         self.main_window = main_window  # Store the MainWindow instance
@@ -37,10 +37,10 @@ class Revenue(ttk.Toplevel):
 
         # Create labels for input fields
         self.revenue_labels = {
-            "month": ttk.Label(self, text="Maand:"),
-            "company": ttk.Label(self, text="Bedrijf:"),
-            "amount": ttk.Label(self, text="Bedrag:"),
-            "vat": ttk.Label(self, text="Btw:"),
+            "month": ctk.CTkLabel(self, text="Maand"),
+            "company": ctk.CTkLabel(self, text="Bedrijf"),
+            "amount": ctk.CTkLabel(self, text="Bedrag"),
+            "vat": ctk.CTkLabel(self, text="Btw"),
         }
         self.revenue_labels["month"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
         self.revenue_labels["company"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
@@ -49,31 +49,47 @@ class Revenue(ttk.Toplevel):
 
         # Create input fields
         self.revenue_entries = {
-            "month": ttk.Entry(self, width=10),
-            "company": ttk.Entry(self, width=10),
-            "amount": ttk.Entry(self, width=10),
-            "vat": ttk.Entry(self, width=10),
+            "month": ctk.CTkEntry(self, width=100),
+            "company": ctk.CTkEntry(self, width=100),
+            "amount": ctk.CTkEntry(self, width=100),
+            "vat": ctk.CTkEntry(self, width=100),
         }
-        self.revenue_entries["month"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.revenue_entries["month"].grid(row=0, column=1, padx=5, pady=5)
         self.revenue_entries["month"].focus()  # Set focus to the month entry field
-        self.revenue_entries["company"].grid(row=1, column=1, padx=(5, 10), pady=5)
-        self.revenue_entries["amount"].grid(row=2, column=1, padx=(5, 10), pady=5)
-        self.revenue_entries["vat"].grid(row=3, column=1, padx=(5, 10), pady=5)
+        self.revenue_entries["company"].grid(row=1, column=1, padx=5, pady=5)
+        self.revenue_entries["amount"].grid(row=2, column=1, padx=5, pady=5)
+        self.revenue_entries["vat"].grid(row=3, column=1, padx=5, pady=5)
 
-        # Create buttons for input and search
+        # Buttons
         self.revenue_buttons = {
-            "enter_revenue": ttk.Button(
-                self, text="Invoeren", bootstyle="primary", command=self.input_revenue
+            "enter_revenue": ctk.CTkButton(
+                self, text="Invoeren", command=self.input_revenue
             ),
-            "find_revenue": ttk.Button(
-                self, text="Zoek", bootstyle="info", command=self.find_revenue
-            ),
+            "find_revenue": ctk.CTkButton(self, text="Zoek", command=self.find_revenue),
         }
         self.revenue_buttons["enter_revenue"].grid(
-            row=4, column=0, columnspan=3, pady=10, padx=15, sticky="WE"
+            row=4, column=0, columnspan=2, pady=(10, 5), padx=5, sticky="NSEW"
         )
         self.revenue_buttons["find_revenue"].grid(
-            row=5, column=0, columnspan=3, pady=10, padx=15, sticky="WE"
+            row=5, column=0, columnspan=2, pady=(5, 10), padx=5, sticky="NSEW"
+        )
+
+        self.revenue_buttons["enter_revenue"].columnconfigure(0, weight=1)
+        self.revenue_buttons["find_revenue"].columnconfigure(0, weight=1)
+
+        self.revenue_buttons["enter_revenue"].configure(
+            font=("Arial", 14, "bold"),
+            anchor="center",
+            fg_color="green",
+            hover_color="darkgreen",
+            height=35,
+        )
+        self.revenue_buttons["find_revenue"].configure(
+            font=("Arial", 14, "bold"),
+            anchor="center",
+            fg_color="green",
+            hover_color="darkgreen",
+            height=35,
         )
 
     # FUNCTIONS
@@ -148,7 +164,7 @@ class Revenue(ttk.Toplevel):
             )
             messagebox.showinfo("Resultaat", result_str)
 
-        self.revenue_entries["month"].delete(0, ttk.END)
+        self.revenue_entries["month"].delete(0, ctk.END)
         self.revenue_entries["month"].focus()
 
     # UPDATE FUNCTIONS TO UPDATE THE MAIN WINDOW

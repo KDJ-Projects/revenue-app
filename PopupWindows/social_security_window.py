@@ -3,10 +3,10 @@
 import sqlite3 as sq
 from tkinter import messagebox
 
-import ttkbootstrap as ttk  # type: ignore
+import customtkinter as ctk  # type: ignore
 
 
-class SocialSecurity(ttk.Toplevel):
+class SocialSecurity(ctk.CTkToplevel):
     """Class for the social security input window."""
 
     def __init__(self, main_window):
@@ -33,29 +33,35 @@ class SocialSecurity(ttk.Toplevel):
         self.conn.commit()
 
         self.social_labels = {
-            "quarter": ttk.Label(self, text="Kwartaal:"),
-            "amount": ttk.Label(self, text="Bedrag:"),
+            "quarter": ctk.CTkLabel(self, text="Kwartaal"),
+            "amount": ctk.CTkLabel(self, text="Bedrag"),
         }
         self.social_labels["quarter"].grid(row=0, column=0, padx=5, pady=5, sticky="W")
         self.social_labels["amount"].grid(row=1, column=0, padx=5, pady=5, sticky="W")
 
         self.social_entries = {
-            "quarter": ttk.Entry(self, width=10),
-            "amount": ttk.Entry(self, width=10),
+            "quarter": ctk.CTkEntry(self, width=100),
+            "amount": ctk.CTkEntry(self, width=100),
         }
-        self.social_entries["quarter"].grid(row=0, column=1, padx=(5, 10), pady=5)
+        self.social_entries["quarter"].grid(row=0, column=1, padx=5, pady=5)
         self.social_entries["quarter"].focus()
-        self.social_entries["amount"].grid(row=1, column=1, padx=(5, 10), pady=5)
+        self.social_entries["amount"].grid(row=1, column=1, padx=5, pady=5)
 
         # BUTTONS
-        self.enter_social_security_btn = ttk.Button(
+        self.enter_social_security_btn = ctk.CTkButton(
             self,
             text="Invoeren",
-            bootstyle="success",
             command=self.input_social_security,
         )
         self.enter_social_security_btn.grid(
-            row=2, column=0, columnspan=3, padx=15, pady=10, sticky="WE"
+            row=2, column=0, columnspan=2, padx=5, pady=10, sticky="WE"
+        )
+        self.enter_social_security_btn.columnconfigure(0, weight=1)
+        self.enter_social_security_btn.configure(
+            font=("Arial", 16, "bold"),
+            anchor="center",
+            fg_color="green",
+            hover_color="darkgreen",
         )
 
     # INPUT FUNCTIONS
